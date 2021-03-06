@@ -60,71 +60,26 @@ mPDF on a computer which already has a folder with TTF fonts in (e.g. on Windows
 If the font-file is not there, or _MPDF_SYSTEM_TTFONTS is not defined, mPDF will look in the folder
 /[your_path_to_mpdf]/ttfonts/
 
-Note that the font-file names are case-sensitive and can contain capitals.
-
-If the folder /ttfontdata/ is writeable (CHMOD 644 or 755), mPDF will save files there which it can 
-re-use next time it accesses a particular font. This will significantly improve processing time
-and is strongly recommended. 
-
-mPDF should be able to read most TrueType Unicode font files with a .ttf extension
-Truetype fonts with .otf extension that are OpenType also work OK.
-TrueType collections (.ttc) will also work if they contain TrueType Unicode fonts.
-
-
-Character substitution
-----------------------
-Most people will have access to a Pan-Unicode font with most Unicode characters in it such as 
-Arial Unicode MS. Set $this->backupSubsFont = array('arialunicodems'); at the top of the config_fonts.php file
-to use this font when substituting any characters not found in the specific font being used.
-
 Example:
-You can set $mpdf->useSubstitutions = true; at runtime
-or $this->useSubstitutions = true; in the config.php file
 
-<p style="font-family: 'Comic Sans MS'">This text contains a Thai character &#3617; which does not exist
-in the Comic Sans MS font file</p>
-
-When useSubstitutions is true, mPDF will try to find substitutions for any missing characters:
-1) firstly looks if the character is available in the inbuilt Symbols or ZapfDingbats fonts;
-2) [If defined] looks in each of the the font(s) set by $this->backupSubsFont array
-
-NB There is an increase in processing time when using substitutions, and even more so if
-a backupSubsFont is defined.
-
-Controlling mPDF mode
-=====================
-The first parameter of new mPDF('') works as follows:
-new mPDF('c') - forces mPDF to only use the built-in [c]ore Adobe fonts (Helvetica, Times etc)
-
-new mPDF('') - default - font subsetting behaviour is determined by the configurable variables
-	$this->maxTTFFilesize and $this->percentSubset (see below)
-	Default values are set so that: 1) very large font files are always subset
-	2) Fonts are embedded as subsets if < 30% of the characters are used
-
-new mPDF('..+aCJK')  new mPDF('+aCJK')
-new mPDF('..-aCJK')  new mPDF('-aCJK')
-	 - used optionally together with a language or language/country code, +aCJK will force mPDF
-	to use the Adobe non-embedded CJK fonts when a passage is marked with e.g. "lang: ja"
-	This can be used at runtime to override the value set for $mpdf->useAdobeCJK in config.php
-	Use in conjunction with settings in config_cp.php
-
-For backwards compatibility, new mPDF('-s') and new mPDF('s') will force subsetting by 
-	setting $this->percentSubset=100
-	new mPDF('utf-8-s') and new mPDF('ar-s') are also recognised
+<?php
+include("mpdf/mpdf.php");
 
 
+$mpdf=new mPDF('',[ 210 , 297],20,'nikosh');
+// $mpdf = new \Mpdf\Mpdf();
+$mpdf->Addpage('O');
+
+$bdate = "আমাদের গ্রামের নাম রোদডুবি | গ্রামটি হুগলি জেলার সরস্বতী নদীর ভীরে অবস্থিত |";
+//Date
+$mpdf->SetFont('nikosh', '', 16);
+$mpdf->SetY(5);
+$mpdf->SetX(10);
+$mpdf->WriteCell(35, 0, $bdate, 0, 0, 'L');
+$filename="exp.pdf";
+$mpdf->Output($filename,'D');
 
 
-Configuration variables changed
-===============================
-Configuration variables are documented in the on-line manual (http://mpdf1.com/manual/).
+?>
 
-
-Font folders
-============
-If you wish to define your own font file folders (perhaps to share),
-you can define the 2 constants in your script before including the mpdf.php script e.g.:
-
-define('_MPDF_TTFONTPATH','your_path/ttfonts/'); 		
-define('_MPDF_TTFONTDATAPATH','your_path/ttfontdata/'); 	// should be writeable
 
